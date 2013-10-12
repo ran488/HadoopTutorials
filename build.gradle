@@ -1,0 +1,44 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'findbugs'
+apply plugin: 'jacoco'
+apply plugin: 'pmd'
+
+defaultTasks 'info', 'clean', 'check', 'build'
+
+sourceCompatibility = 1.5
+version = '1.0'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	//compile group:'org.apache.hadoop', name:'hadoop-core',version:'2.1.1-beta'
+	compile group:'org.apache.hadoop', name:'hadoop-client',version:'2.1.1-beta'
+	compile group:'org.apache.hadoop', name:'hadoop-mapreduce',version:'2.1.1-beta'
+	testCompile group:'junit', name:'junit', version:'4.+'
+}
+
+findbugs {
+	ignoreFailures = true	
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+ }
+ 
+ task coverage() << {
+	println 'Running all checks as well as code coverage report'
+ }
+ coverage.dependsOn check, jacocoTestReport
+
+task info() << {
+	println '**************'
+	println '* Build Info *'
+	println '**************'
+	println "Project: ${project}"
+}
