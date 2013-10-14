@@ -18,6 +18,7 @@ dependencies {
 	compile group:'org.apache.hadoop', name:'hadoop-client',version:'2.1.1-beta'
 	compile group:'org.apache.hadoop', name:'hadoop-mapreduce',version:'2.1.1-beta'
 	testCompile group:'junit', name:'junit', version:'4.+'
+	testCompile group: 'org.easymock', name:'easymock', version:'3.1'
 }
 
 findbugs {
