@@ -3,6 +3,7 @@ apply plugin: 'eclipse'
 apply plugin: 'findbugs'
 apply plugin: 'jacoco'
 apply plugin: 'pmd'
+apply plugin: 'build-dashboard'
 
 defaultTasks 'info', 'clean', 'check', 'build'
 
