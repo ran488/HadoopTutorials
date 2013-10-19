@@ -2,16 +2,22 @@ package org.redneckdev.hadoop;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobPriority;
 import org.apache.hadoop.mapred.MapReduceBase;
-import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapred.RunningJob;
+import org.apache.hadoop.mapred.TextInputFormat;
+import org.apache.hadoop.mapred.TextOutputFormat;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.log4j.Logger;
 
 /**
@@ -24,80 +30,64 @@ import org.apache.log4j.Logger;
 public class BasicWordCount {
 
 	private final static Logger log = Logger.getLogger(BasicWordCount.class);
-
+	JobConf conf;
+	final static String PARAMETERS_ERR_MSG = "Required parameters: input_path output_path"; 
+	
+	
 	/**
-	 * Mapper class for my word count example. Yes, this is stolen right from
-	 * the Apache tutorial, but I'm stealing it line by line and adding logging
-	 * and unit tests so I actually understand what's going on.
+	 * Constructor: create a new job config and get it ready to go
 	 * 
-	 * My unit test is pointing out some interesting stuff. A straight up string
-	 * tokenizer probably won't get you the results you may expect. Shows the
-	 * importance of unit tests in general, and more specifically for this case,
-	 * understanding what your Hadoop mapper is doing, before you rely on the
-	 * results of a hours-long run on a huge data set. Results may be skewed if
-	 * you don't expect "test", "test.", and "test?" to be 3 different words.
+	 * @param inPath
+	 * @param outPath
 	 */
-	public static class WordCountMapper extends MapReduceBase implements
-			Mapper<LongWritable, Text, Text, IntWritable> {
+	public BasicWordCount(String inPath, String outPath) {
+		conf = new JobConf(BasicWordCount.class);
+		/*
+		 * TODO I remember the book saying to use setJarByClass, but Apache
+		 * example shows above. Need to go back and read that to remember why
+		 * one is favorable over the other
+		 * 
+		 * conf.setJarByClass(BasicWordCount.class);
+		 */
+		conf.setJobName("basicWordCount");
+		// TODO - lots of neat looking options to set on a JobConf - check those
+		// out...
+		conf.setJobPriority(JobPriority.NORMAL);
 
-		private final static IntWritable ONE = new IntWritable(1);
-		private Text word = new Text();
+		conf.setOutputKeyClass(Text.class);
+		conf.setOutputValueClass(IntWritable.class);
 
-		public void map(LongWritable key, Text value,
-				OutputCollector<Text, IntWritable> output, Reporter reporter)
-				throws IOException {
-			String lineOfText = value.toString();
-			if (log.isDebugEnabled())
-				log.debug(String.format("Mapper working on input: [%s]",
-						lineOfText));
-			StringTokenizer tokenizer = new StringTokenizer(lineOfText);
+		conf.setMapperClass(WordCountMapper.class);
+		conf.setCombinerClass(WordCountReducer.class);
+		conf.setReducerClass(WordCountReducer.class);
 
-			while (tokenizer.hasMoreTokens()) {
-				word.set(tokenizer.nextToken());
-				output.collect(word, ONE);
-				if (log.isTraceEnabled())
-					log.trace(String.format(
-							" + Mapper just collected a word: [%s]",
-							word.toString()));
-			}
+		conf.setInputFormat(TextInputFormat.class);
+		conf.setOutputFormat(TextOutputFormat.class);
 
-		}
+		FileInputFormat.setInputPaths(conf, new Path(inPath));
+		FileOutputFormat.setOutputPath(conf, new Path(outPath));
 	}
 
 	/**
-	 * Reducer class to consolidate the multiple key/count pairs for a key into
-	 * one single pair for each key.
+	 * Actually run the job.
+	 * 
 	 */
-	public static class WordCountReducer extends MapReduceBase implements
-			Reducer<Text, IntWritable, Text, IntWritable> {
-
-		public void reduce(Text key, Iterator<IntWritable> values,
-				OutputCollector<Text, IntWritable> output, Reporter reporter)
-				throws IOException {
-			
-			if (log.isDebugEnabled())
-				log.debug(String.format("Reducer running for key [%s]",
-						key.toString()));
-			int sum = 0;
-			while (values.hasNext()) {
-				sum += values.next().get();
-			}
-			
-			if (log.isDebugEnabled())
-				log.debug(String.format(
-						"Reducer found [%d] instances of key [%s]", sum,
-						key.toString()));
-			output.collect(key, new IntWritable(sum));
-		}
+	public void run() throws IOException {
+			JobClient.runJob(conf);
 	}
 
 	/**
 	 * @param args
+	 * @throws IOException
 	 */
-	public static void main(String[] args) {
-		log.info("BasicDriver starting up...");
-
-		log.info("...BasicDriver finished");
+	public static void main(String[] args) throws Exception {
+		log.info("BasicWordCount starting up...");
+		if (args.length < 2) {
+			throw new Exception(PARAMETERS_ERR_MSG);
+		} else {
+			new BasicWordCount(args[0], args[1]).run();
+		}
+		log.info("...BasicWordCount finished");
 	}
 
 }
