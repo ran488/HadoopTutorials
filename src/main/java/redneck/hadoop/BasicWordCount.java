@@ -1,4 +1,4 @@
-package org.redneckdev.hadoop;
+package redneck.hadoop;
 
 import java.io.IOException;
 import java.util.Iterator;

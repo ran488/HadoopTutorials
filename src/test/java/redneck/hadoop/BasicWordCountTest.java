@@ -1,25 +1,17 @@
 /**
  * 
  */
-package org.redneckdev.hadoop;
+package redneck.hadoop;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.Reporter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.easymock.*;
 
 /**
  * @author Robb

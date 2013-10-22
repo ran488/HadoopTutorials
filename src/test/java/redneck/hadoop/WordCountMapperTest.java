@@ -1,6 +1,4 @@
-package org.redneckdev.hadoop;
-
-import static org.junit.Assert.*;
+package redneck.hadoop;
 
 import java.io.IOException;
 

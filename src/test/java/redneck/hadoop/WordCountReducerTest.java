@@ -1,6 +1,4 @@
-package org.redneckdev.hadoop;
-
-import static org.junit.Assert.*;
+package redneck.hadoop;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,13 +29,11 @@ public class WordCountReducerTest {
 	}
 
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testReducerClass_1_Set() throws IOException {
 		testReducerClass_Generic(1);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testReducerClass_100_Sets() throws IOException {
 		testReducerClass_Generic(100);
