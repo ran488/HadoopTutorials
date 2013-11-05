@@ -5,7 +5,7 @@ apply plugin: 'jacoco'
 apply plugin: 'pmd'
 apply plugin: 'build-dashboard'
 
-defaultTasks 'info', 'clean', 'check', 'build'
+defaultTasks 'info', 'build'
 
 sourceCompatibility = 1.5
 version = '1.0'
@@ -28,15 +28,11 @@ findbugs {
 
 tasks.withType(FindBugs) {
     reports {
-        xml.enabled = false
-        html.enabled = true
+        xml.enabled = true
+        html.enabled = false
     }
  }
  
- task coverage() << {
-	println 'Running all checks as well as code coverage report'
- }
- coverage.dependsOn check, jacocoTestReport
 
 task info() << {
 	println '**************'
