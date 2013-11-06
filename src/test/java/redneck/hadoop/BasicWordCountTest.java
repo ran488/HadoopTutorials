@@ -29,7 +29,9 @@ public class BasicWordCountTest {
 		File out = new File("build/tmp/junitOutPath");
 		boolean success = true;
 		success = in.mkdir();
+		System.out.println(success);
 		success = out.mkdir();
+		System.out.println(success);
 		inPath = in.getAbsolutePath();
 		outPath = out.getAbsolutePath();
 	}
