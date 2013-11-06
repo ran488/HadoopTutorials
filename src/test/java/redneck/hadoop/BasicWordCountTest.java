@@ -6,6 +6,7 @@ package redneck.hadoop;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
@@ -26,8 +27,9 @@ public class BasicWordCountTest {
 	static {
 		File in = new File("build/tmp/junitInPath");
 		File out = new File("build/tmp/junitOutPath");
-		in.mkdir();
-		out.mkdir();
+		boolean success = true;
+		success = in.mkdir();
+		success = out.mkdir();
 		inPath = in.getAbsolutePath();
 		outPath = out.getAbsolutePath();
 	}
